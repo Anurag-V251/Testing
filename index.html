@@ -66,9 +66,8 @@
 </head>
 <body>
 
-  <h1>Fortran practise problem solutions</h1>
-  <p>Click on folders to navigate, view, copy, or download files directly:)</p>
-  <p>Click on the files to show its contents.Don't click exe file, it is just the compiled one.</p>
+  <h1>GitHub Repository Explorer</h1>
+  <p>Click on folders to navigate, view, copy, or download files directly:</p>
 
   <div class="repo-content">
     <ul id="repo-list">Loading repository contents...</ul>
@@ -87,6 +86,7 @@
     const username = "Anurag-V251"; // Replace with your GitHub username
     const repo = "Testing";    // Replace with your repository name
     const branch = "main";                  // Replace with your branch name (e.g., 'main', 'master')
+    const excludeFiles = ["index.html"];    // Files to exclude from the display
     let currentFilePath = '';               // Store the current file path for download functionality
 
     // Function to fetch and render repository contents
@@ -116,16 +116,18 @@
           repoList.appendChild(backLi);
         }
 
-        // Render files and folders
-        contents.forEach(item => {
-          const li = document.createElement('li');
-          if (item.type === 'dir') {
-            li.innerHTML = `📂 <span class="folder" onclick="fetchRepoContents('${item.path}')">${item.name}</span>`;
-          } else {
-            li.innerHTML = `📄 <span class="folder" onclick="fetchFileContent('${item.path}')">${item.name}</span>`;
-          }
-          repoList.appendChild(li);
-        });
+        // Render files and folders, excluding specified files
+        contents
+          .filter(item => !excludeFiles.includes(item.name)) // Exclude specified files
+          .forEach(item => {
+            const li = document.createElement('li');
+            if (item.type === 'dir') {
+              li.innerHTML = `📂 <span class="folder" onclick="fetchRepoContents('${item.path}')">${item.name}</span>`;
+            } else {
+              li.innerHTML = `📄 <span class="folder" onclick="fetchFileContent('${item.path}')">${item.name}</span>`;
+            }
+            repoList.appendChild(li);
+          });
       } catch (error) {
         repoList.innerHTML = `Error: ${error.message}`;
       }
