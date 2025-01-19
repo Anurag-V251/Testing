@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Repo Explorer</title>
+  <title>Repository Explorer</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -12,77 +12,81 @@
     h1 {
       text-align: center;
     }
-    .folder-structure {
-      background-color: #f4f4f4;
+    .repo-content {
+      margin-top: 20px;
       padding: 10px;
       border: 1px solid #ddd;
       border-radius: 5px;
+      background-color: #f9f9f9;
     }
-    pre {
-      background: #2d2d2d;
-      color: #f8f8f2;
-      padding: 10px;
-      border-radius: 5px;
-      overflow-x: auto;
+    .repo-content ul {
+      list-style-type: none;
+      padding-left: 20px;
     }
-    button {
-      background: #007bff;
-      color: #fff;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 5px;
-      cursor: pointer;
+    .repo-content ul li {
+      margin: 5px 0;
     }
-    button:hover {
-      background: #0056b3;
+    .folder {
+      font-weight: bold;
     }
-    .code-snippet {
-      margin-bottom: 20px;
+    a {
+      text-decoration: none;
+      color: #007bff;
+    }
+    a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
 
-  <h1>My Repository</h1>
+  <h1>GitHub Repository Explorer</h1>
+  <p>Files and folders in the repository are listed below:</p>
 
-  <section>
-    <h2>Folder Structure</h2>
-    <div class="folder-structure">
-      <pre>
-📂 my-repo
- ┣ 📂 src
- ┃ ┣ 📜 app.js
- ┃ ┗ 📜 utils.js
- ┣ 📂 docs
- ┃ ┗ 📜 README.md
- ┗ 📜 index.html
-      </pre>
-    </div>
-  </section>
-
-  <section>
-    <h2>Code Snippets</h2>
-    <div class="code-snippet">
-      <pre>
-const greet = (name) => {
-  return `Hello, ${name}!`;
-};
-console.log(greet('World'));
-      </pre>
-      <button onclick="copyCode('snippet1')">Copy</button>
-    </div>
-  </section>
+  <div class="repo-content">
+    <ul id="repo-list">Loading repository contents...</ul>
+  </div>
 
   <script>
-    // Function to copy code snippets
-    function copyCode(snippetId) {
-      const codeBlock = document.querySelector('.code-snippet pre');
-      navigator.clipboard.writeText(codeBlock.innerText).then(() => {
-        alert('Code copied to clipboard!');
-      }).catch(err => {
-        console.error('Error copying code:', err);
-      });
+    // GitHub repository details
+    const username = "Anurag-V251"; // Replace with your GitHub username
+    const repo = "Testing";    // Replace with your repository name
+    const branch = "main";                  // Replace with your branch name (e.g., 'main', 'master')
+
+    // Function to fetch and render repository contents
+    async function fetchRepoContents() {
+      const repoList = document.getElementById('repo-list');
+      try {
+        // GitHub API URL for repository contents
+        const apiUrl = `https://api.github.com/repos/${username}/${repo}/contents/?ref=${branch}`;
+        const response = await fetch(apiUrl);
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch repository contents');
+        }
+
+        const contents = await response.json();
+
+        // Clear loading text
+        repoList.innerHTML = '';
+
+        // Render files and folders
+        contents.forEach(item => {
+          const li = document.createElement('li');
+          if (item.type === 'dir') {
+            li.innerHTML = `📂 <span class="folder">${item.name}</span>`;
+          } else {
+            li.innerHTML = `📄 <a href="${item.html_url}" target="_blank">${item.name}</a>`;
+          }
+          repoList.appendChild(li);
+        });
+      } catch (error) {
+        repoList.innerHTML = `Error: ${error.message}`;
+      }
     }
+
+    // Load repository contents on page load
+    fetchRepoContents();
   </script>
 
 </body>
