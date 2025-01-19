@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Repository Explorer</title>
+  <title>Private Repo Explorer</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -34,13 +34,6 @@
     .folder:hover {
       text-decoration: underline;
     }
-    a {
-      text-decoration: none;
-      color: #007bff;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
     pre {
       background: #2d2d2d;
       color: #f8f8f2;
@@ -66,8 +59,8 @@
 </head>
 <body>
 
-  <h1>GitHub Repository Explorer</h1>
-  <p>Click on folders to navigate, view, copy, or download files directly:</p>
+  <h1>GitHub Private Repository Explorer</h1>
+  <p>Click on folders to navigate, and view or download files:</p>
 
   <div class="repo-content">
     <ul id="repo-list">Loading repository contents...</ul>
@@ -84,9 +77,10 @@
   <script>
     // GitHub repository details
     const username = "Anurag-V251"; // Replace with your GitHub username
-    const repo = "Testing";    // Replace with your repository name
+    const repo = "testing";    // Replace with your repository name
     const branch = "main";                  // Replace with your branch name (e.g., 'main', 'master')
-    const excludeFiles = ["index.html"];    // Files to exclude from the display
+    const token = "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"; // Replace with your GitHub Personal Access Token
+    const excludeFiles = ["index.html"];    // Files to exclude from display
     let currentFilePath = '';               // Store the current file path for download functionality
 
     // Function to fetch and render repository contents
@@ -98,7 +92,11 @@
       try {
         // GitHub API URL for repository contents
         const apiUrl = `https://api.github.com/repos/${username}/${repo}/contents/${path}?ref=${branch}`;
-        const response = await fetch(apiUrl);
+        const response = await fetch(apiUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
 
         if (!response.ok) {
           throw new Error('Failed to fetch repository contents');
@@ -142,7 +140,11 @@
       try {
         // GitHub API URL for file content
         const apiUrl = `https://raw.githubusercontent.com/${username}/${repo}/${branch}/${filePath}`;
-        const response = await fetch(apiUrl);
+        const response = await fetch(apiUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
 
         if (!response.ok) {
           throw new Error('Failed to fetch file content');
@@ -172,7 +174,11 @@
     async function downloadFile() {
       try {
         const apiUrl = `https://raw.githubusercontent.com/${username}/${repo}/${branch}/${currentFilePath}`;
-        const response = await fetch(apiUrl);
+        const response = await fetch(apiUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
 
         if (!response.ok) {
           throw new Error('Failed to fetch file content for download');
