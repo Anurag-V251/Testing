@@ -28,6 +28,11 @@
     }
     .folder {
       font-weight: bold;
+      cursor: pointer;
+      color: #007bff;
+    }
+    .folder:hover {
+      text-decoration: underline;
     }
     a {
       text-decoration: none;
@@ -41,7 +46,7 @@
 <body>
 
   <h1>GitHub Repository Explorer</h1>
-  <p>Files and folders in the repository are listed below:</p>
+  <p>Click on folders to navigate, and view files in the repository:</p>
 
   <div class="repo-content">
     <ul id="repo-list">Loading repository contents...</ul>
@@ -54,11 +59,11 @@
     const branch = "main";                  // Replace with your branch name (e.g., 'main', 'master')
 
     // Function to fetch and render repository contents
-    async function fetchRepoContents() {
+    async function fetchRepoContents(path = '') {
       const repoList = document.getElementById('repo-list');
       try {
         // GitHub API URL for repository contents
-        const apiUrl = `https://api.github.com/repos/${username}/${repo}/contents/?ref=${branch}`;
+        const apiUrl = `https://api.github.com/repos/${username}/${repo}/contents/${path}?ref=${branch}`;
         const response = await fetch(apiUrl);
 
         if (!response.ok) {
@@ -67,14 +72,21 @@
 
         const contents = await response.json();
 
-        // Clear loading text
+        // Clear the current list
         repoList.innerHTML = '';
+
+        // Add a "Go Back" link if we're inside a folder
+        if (path) {
+          const backLi = document.createElement('li');
+          backLi.innerHTML = `<span class="folder" onclick="fetchRepoContents('${path.split('/').slice(0, -1).join('/')}')">🔙 Go Back</span>`;
+          repoList.appendChild(backLi);
+        }
 
         // Render files and folders
         contents.forEach(item => {
           const li = document.createElement('li');
           if (item.type === 'dir') {
-            li.innerHTML = `📂 <span class="folder">${item.name}</span>`;
+            li.innerHTML = `📂 <span class="folder" onclick="fetchRepoContents('${item.path}')">${item.name}</span>`;
           } else {
             li.innerHTML = `📄 <a href="${item.html_url}" target="_blank">${item.name}</a>`;
           }
