@@ -41,15 +41,42 @@
     a:hover {
       text-decoration: underline;
     }
+    pre {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+      margin-top: 20px;
+    }
+    button {
+      background: #007bff;
+      color: #fff;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
   </style>
 </head>
 <body>
 
   <h1>GitHub Repository Explorer</h1>
-  <p>Click on folders to navigate, and view files in the repository:</p>
+  <p>Click on folders to navigate, and view files directly on this page:</p>
 
   <div class="repo-content">
     <ul id="repo-list">Loading repository contents...</ul>
+  </div>
+
+  <div id="file-content" style="display:none;">
+    <h2>File Content</h2>
+    <pre id="file-display">Loading file content...</pre>
+    <button onclick="copyFileContent()">Copy</button>
+    <button onclick="goBack()">🔙 Go Back</button>
   </div>
 
   <script>
@@ -61,6 +88,9 @@
     // Function to fetch and render repository contents
     async function fetchRepoContents(path = '') {
       const repoList = document.getElementById('repo-list');
+      const fileContent = document.getElementById('file-content');
+      fileContent.style.display = 'none'; // Hide file content view
+
       try {
         // GitHub API URL for repository contents
         const apiUrl = `https://api.github.com/repos/${username}/${repo}/contents/${path}?ref=${branch}`;
@@ -88,13 +118,53 @@
           if (item.type === 'dir') {
             li.innerHTML = `📂 <span class="folder" onclick="fetchRepoContents('${item.path}')">${item.name}</span>`;
           } else {
-            li.innerHTML = `📄 <a href="${item.html_url}" target="_blank">${item.name}</a>`;
+            li.innerHTML = `📄 <span class="folder" onclick="fetchFileContent('${item.path}')">${item.name}</span>`;
           }
           repoList.appendChild(li);
         });
       } catch (error) {
         repoList.innerHTML = `Error: ${error.message}`;
       }
+    }
+
+    // Function to fetch and display file content
+    async function fetchFileContent(filePath) {
+      const fileContent = document.getElementById('file-content');
+      const fileDisplay = document.getElementById('file-display');
+
+      try {
+        // GitHub API URL for file content
+        const apiUrl = `https://raw.githubusercontent.com/${username}/${repo}/${branch}/${filePath}`;
+        const response = await fetch(apiUrl);
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch file content');
+        }
+
+        const content = await response.text();
+
+        // Display file content
+        fileDisplay.textContent = content;
+        fileContent.style.display = 'block';
+      } catch (error) {
+        fileDisplay.textContent = `Error: ${error.message}`;
+      }
+    }
+
+    // Function to copy file content to clipboard
+    function copyFileContent() {
+      const fileDisplay = document.getElementById('file-display');
+      navigator.clipboard.writeText(fileDisplay.textContent).then(() => {
+        alert('File content copied to clipboard!');
+      }).catch(err => {
+        console.error('Failed to copy file content:', err);
+      });
+    }
+
+    // Function to go back to the repository contents
+    function goBack() {
+      document.getElementById('file-content').style.display = 'none';
+      fetchRepoContents();
     }
 
     // Load repository contents on page load
