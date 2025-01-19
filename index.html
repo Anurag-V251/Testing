@@ -57,6 +57,7 @@
       border-radius: 5px;
       cursor: pointer;
       margin-top: 10px;
+      margin-right: 10px;
     }
     button:hover {
       background: #0056b3;
@@ -66,7 +67,7 @@
 <body>
 
   <h1>GitHub Repository Explorer</h1>
-  <p>Click on folders to navigate, and view files directly on this page:</p>
+  <p>Click on folders to navigate, view, copy, or download files directly:</p>
 
   <div class="repo-content">
     <ul id="repo-list">Loading repository contents...</ul>
@@ -76,6 +77,7 @@
     <h2>File Content</h2>
     <pre id="file-display">Loading file content...</pre>
     <button onclick="copyFileContent()">Copy</button>
+    <button onclick="downloadFile()">Download</button>
     <button onclick="goBack()">🔙 Go Back</button>
   </div>
 
@@ -84,6 +86,7 @@
     const username = "Anurag-V251"; // Replace with your GitHub username
     const repo = "Testing";    // Replace with your repository name
     const branch = "main";                  // Replace with your branch name (e.g., 'main', 'master')
+    let currentFilePath = '';               // Store the current file path for download functionality
 
     // Function to fetch and render repository contents
     async function fetchRepoContents(path = '') {
@@ -131,6 +134,7 @@
     async function fetchFileContent(filePath) {
       const fileContent = document.getElementById('file-content');
       const fileDisplay = document.getElementById('file-display');
+      currentFilePath = filePath; // Store the file path for downloading
 
       try {
         // GitHub API URL for file content
@@ -159,6 +163,29 @@
       }).catch(err => {
         console.error('Failed to copy file content:', err);
       });
+    }
+
+    // Function to download the current file
+    async function downloadFile() {
+      try {
+        const apiUrl = `https://raw.githubusercontent.com/${username}/${repo}/${branch}/${currentFilePath}`;
+        const response = await fetch(apiUrl);
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch file content for download');
+        }
+
+        const content = await response.text();
+
+        // Create a blob and trigger download
+        const blob = new Blob([content], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = currentFilePath.split('/').pop(); // Extract the file name from the path
+        link.click();
+      } catch (error) {
+        alert(`Error: ${error.message}`);
+      }
     }
 
     // Function to go back to the repository contents
