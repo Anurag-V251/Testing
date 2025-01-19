@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Repo Explorer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .folder-structure {
+      background-color: #f4f4f4;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    pre {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    button {
+      background: #007bff;
+      color: #fff;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .code-snippet {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>My Repository</h1>
+
+  <section>
+    <h2>Folder Structure</h2>
+    <div class="folder-structure">
+      <pre>
+📂 my-repo
+ ┣ 📂 src
+ ┃ ┣ 📜 app.js
+ ┃ ┗ 📜 utils.js
+ ┣ 📂 docs
+ ┃ ┗ 📜 README.md
+ ┗ 📜 index.html
+      </pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Code Snippets</h2>
+    <div class="code-snippet">
+      <pre>
+const greet = (name) => {
+  return `Hello, ${name}!`;
+};
+console.log(greet('World'));
+      </pre>
+      <button onclick="copyCode('snippet1')">Copy</button>
+    </div>
+  </section>
+
+  <script>
+    // Function to copy code snippets
+    function copyCode(snippetId) {
+      const codeBlock = document.querySelector('.code-snippet pre');
+      navigator.clipboard.writeText(codeBlock.innerText).then(() => {
+        alert('Code copied to clipboard!');
+      }).catch(err => {
+        console.error('Error copying code:', err);
+      });
+    }
+  </script>
+
+</body>
+</html>
