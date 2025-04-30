@@ -4,6 +4,7 @@ program q1_resistance
     real :: R(7) !y values
     real :: xy(7), x2(7)
     real :: b,a !b is slop and a is intercept
+    real :: comp(7),error(7)
     integer i
     data T/19.1,25.0,30.1,36.0,40.0,45.1,50.0/
     data R/76.30,77.80,79.75,80.80,82.35,83.90,85.10/
@@ -18,4 +19,11 @@ program q1_resistance
 
     print*, 'slope is',b 
     print*, 'intercept is',a
+
+    do i = 1, 7
+        comp(i)= a + b*T(i)
+        error(i)= (R(i)-comp(i))**2 !error square
+    end do
+
+    print*, 'Error is', sum(error)
 end program q1_resistance
