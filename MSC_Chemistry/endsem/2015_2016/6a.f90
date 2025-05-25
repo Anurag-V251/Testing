@@ -3,7 +3,7 @@ program name
     b=6.0
 
     h=0.05
-    n = int((b-a)/h)+1
+    n = int((b-a)/h)
     sum = h/3.0*(func(a)+func(b))
     
     do i = 1, n-1

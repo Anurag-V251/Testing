@@ -2,7 +2,7 @@ program name
     a = 0.0
     b= 5.0
     h= 0.01
-    n = int((b-a)/h)+1
+    n = int((b-a)/h)
 
     sum = h/2.0*(func(a)+func(b))
     do i = 1, n-1
